@@ -54,7 +54,7 @@ if order_type == 2:
 else:
     print('포장 고객님은 할인이 적용되지 않습니다.')
 
-#조건: 일반 사칙연산자 사용(*,-)ㄴㄴㄴㄴㄴㄴ
+#조건: 일반 사칙연산자 사용(*,-)
 final_price = total_price * (1 - discount_rate) #변수5 (float)
 
 print('='*30)
