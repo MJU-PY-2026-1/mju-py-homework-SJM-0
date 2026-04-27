@@ -13,9 +13,14 @@ order_list = [] # 조건: 빈 리스트 선언
 for i in range(order_count):
     # 조건: 기능 5개 이상 (메뉴 5개 선택지)
     print('1. 아메리카노(4000원) 2. 카페라떼(4500원) 3. 딸기스무디(5000원) 4. 초코라떼(5500원) 5. 녹차(4000원)')
-    menu_choice = int(input(f'{i+1}번째 메뉴 번호를 선택하세요 (1~5): '))
+    print('0. 주문 종료 (더 이상 주문하지 않음)')
+    menu_choice = int(input(f'{i+1}번째 메뉴 번호를 선택하세요 (0~5): '))
 
     #조건: 연속 if문(if~elif~else) 사용
+    if menu_choice == 0:
+        print('주문을 조기에 종료하고 결제로 진행합니다.')
+        break # 비상탈출
+
     if menu_choice == 1:
         menu_name = '아메리카노'
         price = 4000
@@ -32,9 +37,9 @@ for i in range(order_count):
         menu_name = '녹차'
         price = 4000
     else:
-        print('잘못된 번호입니다. 기본 메뉴(아메리카노)로 주문됩니다.')
-        menu_name = '아메리카노'
-        price = 4000
+        print('잘못된 번호입니다. 다시 선택해 주세요.')
+        continue #스킵
+        
 
     order_list.append(menu_name) #조건: append()를 사용하여 리스트에 추가
     total_price += price #조건: 복합 대입 연산자(+=) 사용
