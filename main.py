@@ -1,71 +1,121 @@
 # 파일이름 : 나의 카페 스마트 포스기
 # 작 성 자 : 신지민
-# 2차 과제 
-print('=== 나의 카페 스마트 포스 시스템 ===')
-# 조건 : 자료형 3개 이상(str, int, float), 변수 5개 이상 사용
-nickname = input('손님 닉네임을 입력하세요: ') # 변수 1(str)
-order_count = int(input(f'어서오세요, {nickname}님! 몇 잔의 음료를 주문하시겠습니까?: ')) # 변수2 (int)
+# 2차 + 3차 과제 
+daily_total_revenue = 0.0 
+daily_order_list = []
 
-total_price = 0 #변수3 (int)
-order_list = [] # 조건: 빈 리스트 선언
+def display_main_menu():
+    print('=== 나의 카페 스마트 포스 시스템 ===')
+    print('1. 새 주문 받기')
+    print('2. 오늘의 마감 보고서 조회')
+    print('0. 시스템 종료')
+    print('\n' + '='*30)
 
-# 조건: for문과 range() 사용
-for i in range(order_count):
-    # 조건: 기능 5개 이상 (메뉴 5개 선택지)
-    print('1. 아메리카노(4000원) 2. 카페라떼(4500원) 3. 딸기스무디(5000원) 4. 초코라떼(5500원) 5. 녹차(4000원)')
-    print('0. 주문 종료 (더 이상 주문하지 않음)')
-    menu_choice = int(input(f'{i+1}번째 메뉴 번호를 선택하세요 (0~5): '))
+    choice = int(input('원하시는 작업 번호를 선택하시오: '))
+    return choice
 
-    #조건: 연속 if문(if~elif~else) 사용
-    if menu_choice == 0:
-        print('주문을 조기에 종료하고 결제로 진행합니다.')
-        break # 비상탈출
+def process_order(customer_name):
+    global daily_total_revenue
+    global daily_order_list
 
-    if menu_choice == 1:
-        menu_name = '아메리카노'
-        price = 4000
-    elif menu_choice == 2:
-        menu_name = '카페라떼'
-        price = 4500
-    elif menu_choice == 3:
-        menu_name = '딸기스무디'
-        price = 5000
-    elif menu_choice == 4:
-        menu_name = '초코라떼'
-        price = 5500
-    elif menu_choice == 5:
-        menu_name = '녹차'
-        price = 4000
+    
+    print(f'\n--- {customer_name} 님의 주문을 시작합니다 ---')
+
+    order_items = []
+    order_prices = []
+    menu_choice = 0
+    discount_rate = 0.0
+
+    discount_rate = float(input('손님의 맴버십 특별 할인율을 입력하세요 (실수형 입력, 예: 0.10): '))
+
+    for i in range(5):
+        print(f'[{i+1}/5 번째 메뉴 선택]')
+        menu_choice = int(input('메뉴 번호 선택 (1. 아메리카노:4000원 2. 카페라떼:4500원 3. 딸기스무디:5000원 4. 초코라떼:5500원 5. 녹차:4000원 0.선택취소):'))
+
+        if menu_choice == 0:
+            print('이번 선택을 취소하고 다음 선택으로 스킵합니다.')
+            continue 
+
+        if menu_choice == 1:
+            menu_name = '아메리카노'
+            price = 4000
+        elif menu_choice == 2:
+            menu_name = '카페라떼'
+            price = 4500
+        elif menu_choice == 3:
+            menu_name = '딸기스무디'
+            price = 5000
+        elif menu_choice == 4:
+            menu_name = '초코라떼'
+            price = 5500
+        elif menu_choice == 5:
+            menu_name = '녹차'
+            price = 4000
+        else:
+            print('잘못된 번호입니다. 다시 선택해 주세요.')
+            continue 
+
+        order_items.append(menu_name)
+        order_prices.append(price)
+        print(f'장바구니에 [{menu_name}]({price}원) 추가 완료!')
+
+    if len(order_items)== 0:
+        print('담긴 메뉴가 없어 주문이 자동 취소됩니다.')
+        return
+    
+    total_before_discount = sum(order_prices)
+    expensive_price = max(order_prices)
+    total_count = len(order_items)
+    order_items.sort()
+
+    final_discount = 0.0
+
+    if total_before_discount >= 10000 and discount_rate >= 0.05:
+        if total_before_discount >= 13000:
+            print('13,000원 이상 고액 주문으로 5% 추가 특별 할인 자동 적용!')
+            final_discount = total_before_discount * (discount_rate + 0.05)
+        else:
+            final_discount = total_before_discount * discount_rate
+    elif total_before_discount >= 5000 or discount_rate > 0.0:
+        final_discount = total_before_discount * discount_rate
     else:
-        print('잘못된 번호입니다. 다시 선택해 주세요.')
-        continue #스킵
-        
+        final_discount = 0.0
 
-    order_list.append(menu_name) #조건: append()를 사용하여 리스트에 추가
-    total_price += price #조건: 복합 대입 연산자(+=) 사용
+    final_price = total_before_discount - final_discount
 
-print(f'주문하신 메뉴 확인: {order_list}')
+    daily_total_revenue += final_price
+    daily_order_list.extend(order_items)
 
-#조건: 독립적인 if문 및 중첩 if문 사용
-order_type = int(input('포장하시겠습니까? (1.포장 / 2.매장): '))
-discount_rate = 0.0 #변수4 (float)
+    print('=======영수증=======')
+    print(f'주문 고객명 : {customer_name}님')
+    print(f'정렬된 메뉴 : {order_items}')
+    print(f'총 주문 수량: {total_count}개 최고가 메뉴: {expensive_price}원')
+    print(f'할인 전 금액: {total_before_discount}원')
+    print(f'차감 할인액 : {int(final_discount)}원')
+    print(f'최종 결제액 : {int(final_price)}원')
+    print('='*30)
 
-if order_type == 2:
-    print('매장 이용 시 맴버십 할인이 가능합니다.')
-    membership = int(input('맴버십 회원이신가요? (1.예 / 2.아니오): '))
-    if membership == 1: #중첩 if문
-        print('단골 손님! 10% 할인이 적용됩니다.')
-        discount_rate = 0.1
-else:
-    print('포장 고객님은 할인이 적용되지 않습니다.')
+def show_daily_report():
+    print('=======오늘의 마감 보고서=======')
+    print(f'총 판매된 메뉴 개수 : {len(daily_order_list)}개')
+    print(f'금일 누적 판매 리스트: {daily_order_list}')
+    print(f'오늘 하루 최종 총 매출: {int(daily_total_revenue)}원')
+    print('='*30)
 
-#조건: 일반 사칙연산자 사용(*,-)
-final_price = total_price * (1 - discount_rate) #변수5 (float)
+while True:
+    menu_num = display_main_menu()
 
-print('='*30)
-print(f'     [주문영수증]     ')
-print(f' 손님: {nickname}')
-print(f' 총 주문 수량: {order_count}잔')
-print(f' 최종 결제 금액: {int(final_price)}원')
-print('='*30)
-print('이용해 주셔서 감사합니다!')
+    if menu_num == 1:
+        name = input('주문 손님의 닉네임을 입력하세요: ')
+        process_order(name)
+
+    elif menu_num == 2:
+        show_daily_report()
+
+    elif menu_num == 0:
+        print('카페 스마트 포스가 종료됩니다.')
+        break
+
+    else:
+        print('[오류] 잘못된 번호입니다. 0, 1, 2번 중에서 다시 입력해주세요.')
+
