@@ -102,7 +102,7 @@ def process_order(customer_name):
 
     daily_total_revenue += final_price
     
-    single_order_record = [customer_name, total_count, int(final_price), menus_str]
+    single_order_record = [customer_name, total_count, int(final_price)]
 
     daily_order_records.append(single_order_record)
 
@@ -121,6 +121,22 @@ def show_daily_report():
     print('='*30)
     print('[상세 주문 내역 표]')
 
+    if len(daily_order_records) == 0:
+        print('오늘 판매된 내역이 없습니다.')
+    else:
+        for record in daily_order_records:
+            print(f'고객명 : {record[0]:<5} | 수량 : {record[1]}개 | 결제금액 : {record[2]:<5}원')
+    print('='*30)
+
+def save_report_to_file():
+    try :
+        with open('daily_report.csv', 'w', encoding='utf-8') as file:
+            file.write('고객명,총수량,결재금액,메뉴내역\n')
+            for record in daily_order_records:
+                file.write(f'{record[0]},{record[1]},{record[2]},{record[3]}\n')
+        print("\n오늘의 마감 보고서가 'daily_report.csv' 파일로 안전하게 저장되었습니다.")
+    except Exception as e:
+        print(f'파일 저장 중 문제가 발생했습니다: {e}')
 
 while True:
     menu_num = display_main_menu()
@@ -134,8 +150,11 @@ while True:
 
     elif menu_num == 0:
         print('카페 스마트 포스가 종료됩니다.')
+        save_report_to_file()
         break
+
+    elif menu_num == -1:
+        continue
 
     else:
         print('[오류] 잘못된 번호입니다. 0, 1, 2번 중에서 다시 입력해주세요.')
-
