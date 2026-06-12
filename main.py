@@ -1,8 +1,14 @@
 # 파일이름 : 나의 카페 스마트 포스기
 # 작 성 자 : 신지민
-# 2차 + 3차 과제 
+# 2차 + 3차 + 4 과제 
 daily_total_revenue = 0.0 
-daily_order_list = []
+daily_order_records = []
+
+try :
+    with open('daily_report.csv', 'r', encoding = 'utf-8') as f:
+        print('\n 이전 영입 기록 파일을 성공적으로 인식했습니다.')
+except FileNotFoundError:
+    print('\n 기존 영업 기록이 없습니다. 새로운 영업을 시작합니다.')
 
 def display_main_menu():
     print('=== 나의 카페 스마트 포스 시스템 ===')
@@ -11,26 +17,37 @@ def display_main_menu():
     print('0. 시스템 종료')
     print('\n' + '='*30)
 
-    choice = int(input('원하시는 작업 번호를 선택하시오: '))
-    return choice
+    try :
+        choice = int(input('원하시는 작업 번호를 선택하시오: '))
+        return choice
+    except ValueError :
+        print('\n 문자가 아닌 숫자로만 입력해주세요!')
+        return -1
+
 
 def process_order(customer_name):
     global daily_total_revenue
-    global daily_order_list
+    global daily_order_records
 
     
     print(f'\n--- {customer_name} 님의 주문을 시작합니다 ---')
 
     order_items = []
     order_prices = []
-    menu_choice = 0
-    discount_rate = 0.0
 
-    discount_rate = float(input('손님의 맴버십 특별 할인율을 입력하세요 (실수형 입력, 예: 0.10): '))
+    try :
+        discount_rate = float(input('손님의 맴버십 특별 할인율을 입력하세요 (실수형 입력, 예: 0.10): '))
+    except ValueError :
+        print('올바른 실수가 아닙니다. 할인율이 0.0으로 자동 적용됩니다.')
+        discount_rate = 0.0
 
     for i in range(5):
         print(f'[{i+1}/5 번째 메뉴 선택]')
-        menu_choice = int(input('메뉴 번호 선택 (1. 아메리카노:4000원 2. 카페라떼:4500원 3. 딸기스무디:5000원 4. 초코라떼:5500원 5. 녹차:4000원 0.선택취소):'))
+        try :
+            menu_choice = int(input('메뉴 번호 선택 (1. 아메리카노:4000원 2. 카페라떼:4500원 3. 딸기스무디:5000원 4. 초코라떼:5500원 5. 녹차:4000원 0.선택취소):'))
+        except ValueError :
+            print('[오류] 숫자로만 입력해주세요. 이번 선택을 취소하고 다음 선택으로 스킵합니다.')
+            continue
 
         if menu_choice == 0:
             print('이번 선택을 취소하고 다음 선택으로 스킵합니다.')
@@ -84,7 +101,10 @@ def process_order(customer_name):
     final_price = total_before_discount - final_discount
 
     daily_total_revenue += final_price
-    daily_order_list.extend(order_items)
+    
+    single_order_record = [customer_name, total_count, int(final_price), menus_str]
+
+    daily_order_records.append(single_order_record)
 
     print('=======영수증=======')
     print(f'주문 고객명 : {customer_name}님')
@@ -97,10 +117,10 @@ def process_order(customer_name):
 
 def show_daily_report():
     print('=======오늘의 마감 보고서=======')
-    print(f'총 판매된 메뉴 개수 : {len(daily_order_list)}개')
-    print(f'금일 누적 판매 리스트: {daily_order_list}')
     print(f'오늘 하루 최종 총 매출: {int(daily_total_revenue)}원')
     print('='*30)
+    print('[상세 주문 내역 표]')
+
 
 while True:
     menu_num = display_main_menu()
