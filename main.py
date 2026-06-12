@@ -1,6 +1,6 @@
 # 파일이름 : 나의 카페 스마트 포스기
 # 작 성 자 : 신지민
-# 2차 + 3차 + 4 과제 
+# 2차 + 3차 + 4차 과제 
 daily_total_revenue = 0.0 
 daily_order_records = []
 
